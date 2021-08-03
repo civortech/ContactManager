@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="38a2ad67-37b0-4d1a-88e5-3c7945851913" ChangeDateTime="08/02/2021 23:53:04">
+    <Property Name="ElementName" Value="[dbo].[Contacts]" />
+    <Property Name="ElementType" Value="SqlView" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[vw_Contact]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="91266bd0-640b-472c-8666-b8f72e06bc92" ChangeDateTime="08/02/2021 23:53:31">
+    <Property Name="ElementName" Value="[dbo].[FullPerson]" />
+    <Property Name="ElementType" Value="SqlView" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[vw_Person]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7ef80ed8-02b9-46be-b38c-85419c606a2f" ChangeDateTime="08/02/2021 23:56:49">
+    <Property Name="ElementName" Value="[dbo].[vw_Person]" />
+    <Property Name="ElementType" Value="SqlView" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[vw_Persons]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f90d7d8c-ac4f-40c9-8639-d82ce535af27" ChangeDateTime="08/02/2021 23:57:08">
+    <Property Name="ElementName" Value="[dbo].[vw_Contact]" />
+    <Property Name="ElementType" Value="SqlView" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[vw_Contacts]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f0c9acc3-1f92-40ea-bc45-eaaa6415ab3c" ChangeDateTime="08/02/2021 23:57:50">
+    <Property Name="ElementName" Value="[dbo].[Customer]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Customers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="db501612-3ce8-48f9-b8b6-255aaa1c8c1c" ChangeDateTime="08/02/2021 23:58:02">
+    <Property Name="ElementName" Value="[dbo].[Name]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Names]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="79af61f0-96c7-45ff-b40e-3e25fa7e40bc" ChangeDateTime="08/02/2021 23:58:12">
+    <Property Name="ElementName" Value="[dbo].[Person]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Persons]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7e7376f9-78ac-421f-9787-c1b9f1ece9bf" ChangeDateTime="08/02/2021 23:58:24">
+    <Property Name="ElementName" Value="[dbo].[Supplier]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Suppliers]" />
+  </Operation>
+</Operations>
