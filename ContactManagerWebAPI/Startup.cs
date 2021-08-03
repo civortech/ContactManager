@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using ContactManagerWebAPI.Models;
 
 namespace ContactManagerWebAPI
 {
@@ -28,6 +30,12 @@ namespace ContactManagerWebAPI
         {
 
             services.AddControllers();
+            
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<ContactManagerDatabaseContext>(options =>
+                options.UseSqlServer(connectionString)
+            );
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ContactManagerWebAPI", Version = "v1" });
