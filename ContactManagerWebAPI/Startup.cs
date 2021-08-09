@@ -1,23 +1,23 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using ContactManagerWebAPI.Models;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using ContactManagerWebAPI.Data;
+using ContactManagerWebAPI.Interfaces;
+using ContactManagerWebAPI.Services;
+using System;
 
 namespace ContactManagerWebAPI
 {
     public class Startup
     {
+        readonly string AllowOrigin = "my allow origin";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -28,14 +28,39 @@ namespace ContactManagerWebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowOrigin,
+                                  builder =>
+                                  {
+                                      builder.AllowAnyOrigin()
+                                      .AllowAnyMethod()
+                                      .AllowAnyHeader();
+                                  });
 
-            services.AddControllers();
-            
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<ContactManagerDatabaseContext>(options =>
-                options.UseSqlServer(connectionString)
+            });
+
+            services.AddControllers().AddJsonOptions(options => {
+                options.JsonSerializerOptions.IgnoreNullValues = false;
+                options.JsonSerializerOptions.WriteIndented = true;
+                options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
+            services.AddDbContext<ContactManagerDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("ContactManagerDbConnectionString"))//,
+                    //sqlServerOptionsAction: sqlOptions =>
+                    //{
+                    //    sqlOptions.EnableRetryOnFailure(
+                    //    maxRetryCount: 5,
+                    //    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    //    errorNumbersToAdd: null);
+                    //}), ServiceLifetime.Transient
             );
-            
+
+            services.AddTransient<IContactManagerService, ContactManagerService>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ContactManagerWebAPI", Version = "v1" });
@@ -50,11 +75,16 @@ namespace ContactManagerWebAPI
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ContactManagerWebAPI v1"));
+
+                using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+                MockData.Seed(serviceScope.ServiceProvider);
             }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(AllowOrigin);
 
             app.UseAuthorization();
 

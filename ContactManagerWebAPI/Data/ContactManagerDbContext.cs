@@ -1,21 +1,20 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+using ContactManagerWebAPI.Data.Entities;
 
 #nullable disable
 
-namespace ContactManagerWebAPI.Models
+namespace ContactManagerWebAPI.Data
 {
-    public partial class ContactManagerDatabaseContext : DbContext
+    public partial class ContactManagerDbContext : DbContext
     {
-        public ContactManagerDatabaseContext()
+        public ContactManagerDbContext()
         {
         }
 
-        public ContactManagerDatabaseContext(DbContextOptions<ContactManagerDatabaseContext> options)
+        public ContactManagerDbContext(DbContextOptions<ContactManagerDbContext> options)
             : base(options)
-        {
-        }
+        { }
 
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Name> Names { get; set; }
@@ -86,13 +85,11 @@ namespace ContactManagerWebAPI.Models
 
                 entity.Property(e => e.Last).HasMaxLength(50);
 
-                entity.Property(e => e.RowId).HasColumnName("RowID");
-
                 entity.Property(e => e.Telephone).HasMaxLength(12);
 
                 entity.Property(e => e.Type)
                     .IsRequired()
-                    .HasMaxLength(8)
+                    .HasMaxLength(1)
                     .IsUnicode(false);
             });
 

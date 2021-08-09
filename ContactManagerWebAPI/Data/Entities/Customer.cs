@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace ContactManagerWebAPI.Models
+namespace ContactManagerWebAPI.Data.Entities
 {
     public partial class Customer
     {

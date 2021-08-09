@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-#nullable disable
-
-namespace ContactManagerWebAPI.Models
+namespace ContactManagerWebAPI.DTOs
 {
-    public partial class Supplier
+    public class SupplierDto
     {
         public int Id { get; set; }
         public int PersonId { get; set; }
         public string Telephone { get; set; }
-
-        public virtual Person Person { get; set; }
     }
 }

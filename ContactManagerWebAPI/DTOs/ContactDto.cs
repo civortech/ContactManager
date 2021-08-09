@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-#nullable disable
-
-namespace ContactManagerWebAPI.Models
+namespace ContactManagerWebAPI.DTOs
 {
-    public partial class VwContact
+    public class ContactDto
     {
         public int PersonId { get; set; }
-        public int Id { get; set; }
+        public int NameId { get; set; }
+        public int? ContactId { get; set; }
         public string Type { get; set; }
         public string First { get; set; }
         public string Last { get; set; }
-        public DateTime? Birthday { get; set; }
         public string Email { get; set; }
+        public DateTime? Birthday { get; set; }
         public string Telephone { get; set; }
-        public long RowId { get; set; }
     }
 }

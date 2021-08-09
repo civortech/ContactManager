@@ -1,6 +1,6 @@
 using System;
 
-namespace ContactManagerWebAPI
+namespace ContactManagerWebApp
 {
     public class WeatherForecast
     {
