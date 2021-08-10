@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import DataGrid, { Column, Pager, Paging, Editing } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Pager, Paging, Editing, Lookup, EmailRule, RequiredRule, PatternRule } from 'devextreme-react/data-grid';
 //import DataSource from 'devextreme/data/data_source';
 import CustomStore from 'devextreme/data/custom_store';
 
@@ -12,79 +12,27 @@ export class Home extends Component {
     constructor(props) {
         super(props);
 
+        this.datagridRef = React.createRef();
+
         this.state = {
-            //contacts: [],
-            //loading: true,
             contactsData: new CustomStore({
-                key: 'personId',
+                key: ['personId', 'contactId', 'type'],
                 load: () => this.sendRequest(`${URL}/Contacts`),
                 insert: (values) => this.sendRequest(`${URL}/InsertContact`, 'POST', values),
-                update: (key, values) => this.sendRequest(`${URL}/UpdateContact/${key}`, 'PUT', values),
-                remove: (key) => this.sendRequest(`${URL}/DeleteContact/${key}`, 'DELETE')
+                update: (key, values) => this.sendRequest(`${URL}/UpdateContact/${key.type}/${key.personId}`, 'PUT', values),
+                remove: (key) => {
+                    console.log("remove key", key);
+                    return this.sendRequest(`${URL}/DeleteContact/${key.type}/${key.personId}`, 'DELETE');
+                }
             })
         };
 
-        //this.dataSource = new DataSource({
-        //    store: {
-        //        type: 'array',
-        //        data: items
-        //    },
-        //    sort: { getter: 'last' }
-        //});
     }
-
-    //componentDidMount() {
-    //    this.getContactData();
-    //}
-
-    //static renderContactTable(contacts) {
-    //    return (
-    //        <table className='table table-striped' aria-labelledby="tabelLabel">
-    //            <thead>
-    //                <tr>
-    //                    <th>Type</th>
-    //                    <th>First Name</th>
-    //                    <th>Last Name</th>
-    //                    <th>Email</th>
-    //                    <th>Phone</th>
-    //                    <th>Birthday</th>
-    //                </tr>
-    //            </thead>
-    //            <tbody>
-    //                {contacts.items.map(contact =>
-    //                    <tr key={contact.personId}>
-    //                        <td>{contact.type}</td>
-    //                        <td>{contact.first}</td>
-    //                        <td>{contact.last}</td>
-    //                        <td>{contact.email}</td>
-    //                        <td>{contact.telephone}</td>
-    //                        <td>{contact.birthday ? new Date(contact.birthday).toLocaleDateString() : ''}</td>
-    //                    </tr>
-    //                )}
-    //            </tbody>
-    //        </table>
-    //    );
-    //}
-
-    //componentWillUnmount() {
-    //    // A DataSource instance created outside a UI component should be disposed of manually.
-    //    this.dataSource.dispose();
-    //}
-
-    //async getContactData() {
-    //    console.log("URL", URL);
-
-    //    const response = await fetch(`${URL}/Contacts?Limit=20&Page=1`);
-    //    const data = await response.json();
-    //    console.log("data", data);
-    //    this.setState({ contacts: data, loading: false });
-    //}
 
     sendRequest(url, method, data) {
         method = method || 'GET';
         data = data || {};
-
-        console.log("sendRequest url", url);
+        console.log("sendRequest method url data", method, url, JSON.stringify(data));
 
         if (method === 'GET') {
             return fetch(url, {
@@ -95,8 +43,6 @@ export class Home extends Component {
                 throw json.Message;
             }));
         }
-
-        console.log("sendRequest data", JSON.stringify(data));
 
         return fetch(url, {
             method: method,
@@ -116,38 +62,90 @@ export class Home extends Component {
         });
     }
 
+    overrideOnEditorPreparing(e) {
+        console.log("overrideOnEditorPreparing e", e);
+        if (e.dataField === 'type' && e.parentType === 'dataRow') {
+            if (e.row.rowType === "data") {
+                e.editorOptions.disabled = !e.row.isNewRow;
+            } else {
+                e.editorOptions.disabled = false;
+            }
+        }
+    }
+
+    setTypeValue(rowData, value) {
+        console.log("setTypeValue rowData value", rowData, value);
+        if (value === 'c') {
+            rowData.telephone = null;
+        } else {
+            rowData.birthday = null;
+            rowData.email = null;
+        }
+        this.defaultSetCellValue(rowData, value);
+    }
+
     render() {
         const { contactsData } = this.state;
-
-        //let contents = this.state.loading
-        //    ? <p><em>Loading...</em></p>
-        //    : Home.renderContactTable(this.state.contacts);
 
         return (
             <div>
                 <DataGrid
+                    ref={this.datagridRef}
                     dataSource={contactsData}
                     showBorders={true}
                     showRowLines={true}
                     rowAlternationEnabled={true}
+                    onEditorPreparing={this.overrideOnEditorPreparing}
                 >
                     <Editing
                         refreshMode="full"
-                        mode="cell"
+                        mode="popup"
                         allowAdding={true}
                         allowDeleting={true}
                         allowUpdating={true}
                     />
-                    <Column dataField="type"></Column>
-                    <Column dataField="first"></Column>
-                    <Column dataField="last"></Column>
-                    <Column dataField="email"></Column>
-                    <Column dataField="telephone"></Column>
+                    <Column
+                        dataField="type"
+                        setCellValue={this.setTypeValue}
+                    >
+                        <Lookup
+                            dataSource={[{ 'type': 'c', 'desc': 'Customer' }, { 'type': 's', 'desc': 'Supplier' }]}
+                            valueExpr="type"
+                            displayExpr="desc" />
+                        <RequiredRule />
+                    </Column>
+                    <Column
+                        dataField="first"
+                        caption="First Name"
+                    >
+                        <PatternRule
+                            message={'First Name must be up to 50 characters!'}
+                            pattern={/^[a-zA-Z0-9]{1,50}$/}
+                        /> 
+                    </Column>
+                    <Column
+                        dataField="last"
+                        caption="Last Name"
+                    >
+                        <PatternRule
+                            message={'Last Name must be up to 50 characters!'}
+                            pattern={/^[a-zA-Z0-9]{1,50}$/}
+                        />
+                    </Column>
+                    <Column dataField="email">
+                        <EmailRule />
+                    </Column>
+                    <Column dataField="telephone">
+                        <PatternRule
+                            message={'Phone must be between 7 and 12 numeric values!'}
+                            pattern={/^\d{7,12}$/}
+                        />
+                    </Column>
                     <Column dataField="birthday" dataType="date"></Column>
-                    <Paging defaultPageSize={2} />
+                    <Paging defaultPageSize={5} />
                     <Pager
                         visible={true}
-                        allowedPageSizes={[2, 5]}
+                        allowedPageSizes={[5, 10]}
                         displayMode="compact"
                         showPageSizeSelector={true}
                         showNavigationButtons={true} />

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ContactManagerWebAPI.DTOs
 {
-    public class ContactResponseDto
+    public class ContactResponseDTO
     {
         public int CurrentPage { get; init; }
 
@@ -13,6 +13,6 @@ namespace ContactManagerWebAPI.DTOs
 
         public int TotalPages { get; init; }
 
-        public List<ContactDto> Items { get; init; }
+        public List<ContactDTO> Items { get; init; }
     }
 }

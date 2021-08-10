@@ -12,6 +12,7 @@ namespace ContactManagerWebAPI.Data
     {
         public static void Seed(IServiceProvider serviceProvider)
         {
+            //return;
             using var context = new ContactManagerDbContext(
                       serviceProvider
                       .GetRequiredService<DbContextOptions<ContactManagerDbContext>>());

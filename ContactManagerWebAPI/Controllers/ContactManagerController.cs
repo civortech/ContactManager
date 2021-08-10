@@ -13,6 +13,19 @@ namespace ContactManagerWebAPI.Controllers
     public class ContactManagerController : ControllerBase
     {
         public record UrlQueryParams(int Limit = 20, int Page = 1);
+        private static ContactDTO ItemToDTO(ContactDTO contactDto) =>
+        new ContactDTO
+        {
+            PersonId = contactDto.PersonId,
+            NameId = contactDto.NameId,
+            ContactId = contactDto.ContactId,
+            Type = contactDto.Type,
+            First = contactDto.First,
+            Last = contactDto.Last,
+            Email = contactDto.Email,
+            Birthday = contactDto.Birthday,
+            Telephone = contactDto.Telephone
+        };
 
         private readonly IContactManagerService _service;
         private readonly ILogger<ContactManagerController> _logger;
@@ -24,43 +37,63 @@ namespace ContactManagerWebAPI.Controllers
         }
 
         [HttpGet("Contacts")]
-        [ProducesResponseType(typeof(ContactResponseDto), Status200OK)]
+        [ProducesResponseType(typeof(ContactResponseDTO), Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), Status400BadRequest)]
         public async Task<IActionResult> GetContactsByPageAsync([FromQuery] UrlQueryParams urlQueryParameters, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
             var data = await _service.GetContactsByPageAsync(urlQueryParameters.Limit, urlQueryParameters.Page, cancellationToken);
-
             return Ok(data);
         }
 
         [HttpGet("Contacts/{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<ContactDTO>> GetContact(int id, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"HttpGet id: {id}");
-            return $"{id}";
+            var contact = await _service.GetContactAsync(id, cancellationToken);
+
+            if (contact == null)
+            {
+                return NotFound();
+            }
+
+            return contact;
         }
 
         [HttpPost("InsertContact")]
-        public void Post([FromBody] object value)
+        public async Task<ActionResult<ContactDTO>> PostContact(ContactDTO contactDTO, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"HttpPost value: {value}");
+            _logger.LogInformation($"HttpPost contactDTO.Last: {contactDTO.Last}");
+            var contact = await _service.AddContactAsync(contactDTO, cancellationToken);
+            
+            return CreatedAtAction(nameof(GetContact), new { id = contact.PersonId }, ItemToDTO(contact));
+        }
+ 
+
+        [HttpPut("UpdateContact/{type}/{id}")]
+        public async Task<IActionResult> Put(string type, int id, ContactDTO contactDTO, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation($"HttpPut type: {type} id: {id} First: {contactDTO.PersonId}");
+
+            //if (id != contactDTO.PersonId)
+            //{
+            //    return BadRequest();
+            //}
+
+            var contact = await _service.UpdateContactAsync(type, id, contactDTO, cancellationToken);
+            if (contact == null)
+            {
+                return NotFound();
+            }
+
+
+            return NoContent();
         }
 
-        [HttpPut("UpdateContact/{id}")]
-        public void Put(int id, [FromBody] object value)
+        [HttpDelete("DeleteContact/{type}/{id}")]
+        public void Delete(string type, int id)
         {
-            _logger.LogInformation($"HttpPut id: {id} value: {value}");
-        }
-
-        [HttpDelete("DeleteContact/{id}")]
-        public void Delete(int id)
-        {
-            _logger.LogInformation($"HttpDelete id: {id}");
+            _logger.LogInformation($"HttpDelete type: {type} id: {id}");
+            _service.DeleteContact(type, id);
         }
 
     }

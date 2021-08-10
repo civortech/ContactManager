@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ContactManagerWebAPI.DTOs
 {
-    public class SupplierDto
+    public class SupplierDTO
     {
         public int Id { get; set; }
         public int PersonId { get; set; }

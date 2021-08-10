@@ -38,7 +38,7 @@ namespace ContactManagerWebAPI.Data
                 entity.HasOne(d => d.Person)
                     .WithMany(p => p.Customers)
                     .HasForeignKey(d => d.PersonId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Customers_Person");
             });
 
@@ -54,7 +54,7 @@ namespace ContactManagerWebAPI.Data
                 entity.HasOne(d => d.Name)
                     .WithMany(p => p.People)
                     .HasForeignKey(d => d.NameId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Person_Name");
             });
 
@@ -67,7 +67,7 @@ namespace ContactManagerWebAPI.Data
                 entity.HasOne(d => d.Person)
                     .WithMany(p => p.Suppliers)
                     .HasForeignKey(d => d.PersonId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Supplier_Person");
             });
 
